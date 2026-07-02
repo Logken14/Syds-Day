@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Syd's Day</title>
+<meta name="theme-color" content="#C9B6E4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Syd's Day">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lavender:#C9B6E4;
+    --peach:#FFD6BA;
+    --mint:#B8E0D2;
+    --sky:#AEDFF7;
+    --blush:#F7C6D9;
+    --butter:#FFF3B0;
+    --orchid:#E5C9F5;
+    --seafoam:#C7EEDC;
+    --powder:#D6E5FA;
+    --dusty:#D9CBEA;
+    --sand:#FFE0B5;
+
+    --bg:#FDF6F0;
+    --card:#FFFFFF;
+    --text:#5B5065;
+    --muted:#9C93A8;
+    --line:#F0E7F5;
+    --accent:#C9B6E4;
+    --accent-deep:#9B82BE;
+    --danger:#E8899B;
+    --radius:20px;
+    --radius-sm:14px;
+    --shadow:0 6px 20px rgba(155,130,190,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{min-height:100%;}
+  body{
+    margin:0;
+    font-family:'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:var(--bg);
+    background-image: radial-gradient(circle at 15% 0%, rgba(201,182,228,0.18), transparent 40%),
+                       radial-gradient(circle at 85% 10%, rgba(255,214,186,0.20), transparent 45%);
+    color:var(--text);
+    min-height:100vh;
+    padding-bottom:calc(120px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Fredoka', sans-serif; font-weight:600;}
+  button{font-family:inherit;}
+  .wrap{max-width:520px; margin:0 auto; padding:0 18px;}
+
+  /* Header */
+  .topbar{padding:24px 18px 10px; max-width:520px; margin:0 auto;}
+  .topbar .greet{font-size:13px; color:var(--muted); font-weight:700; letter-spacing:.03em; text-transform:uppercase;}
+  .topbar h1{font-size:28px; margin:2px 0 16px; color:var(--text);}
+  .header-row{display:flex; align-items:center; gap:12px; margin-bottom:2px;}
+  .header-row h1{margin:0;}
+  .header-row .greet{margin-bottom:1px;}
+  .avatar{
+    width:52px; height:52px; border-radius:50%; object-fit:cover; flex-shrink:0;
+    box-shadow:0 3px 10px rgba(155,130,190,0.25); border:2.5px solid #fff;
+  }
+  .quote-banner{
+    font-family:'Fredoka'; font-weight:500; font-size:14px; color:var(--accent-deep);
+    background:linear-gradient(90deg, rgba(201,182,228,0.18), rgba(255,214,186,0.18));
+    border-radius:14px; padding:10px 14px; margin-bottom:16px; line-height:1.35;
+  }
+
+  /* Progress blob */
+  .progress-card{
+    background:linear-gradient(135deg, var(--lavender), var(--sky));
+    border-radius:24px;
+    padding:20px 22px;
+    display:flex; align-items:center; gap:16px;
+    box-shadow:var(--shadow);
+    color:#fff;
+  }
+  .progress-ring{position:relative; width:64px; height:64px; flex-shrink:0;}
+  .progress-ring svg{transform:rotate(-90deg);}
+  .progress-ring .pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Fredoka'; font-weight:600; font-size:15px; color:#fff;
+  }
+  .progress-text .line1{font-family:'Fredoka'; font-weight:600; font-size:17px;}
+  .progress-text .line2{font-size:13px; opacity:.92; margin-top:2px;}
+
+  /* Day/Week toggle */
+  .mode-toggle{
+    display:flex; background:var(--card); border-radius:999px; padding:4px; gap:4px;
+    box-shadow:0 2px 8px rgba(155,130,190,0.08); margin-bottom:14px;
+  }
+  .mode-btn{
+    flex:1; border:none; background:transparent; padding:9px 0; border-radius:999px;
+    font-weight:800; font-size:13.5px; color:var(--muted); cursor:pointer; font-family:'Nunito';
+  }
+  .mode-btn.active{background:var(--accent-deep); color:#fff;}
+
+  /* Week overview */
+  .week-summary{
+    display:flex; gap:18px; padding:14px 4px 4px; font-size:13.5px; color:var(--muted); font-weight:700;
+  }
+  .week-summary strong{color:var(--accent-deep); font-family:'Fredoka'; font-weight:600; margin-right:4px;}
+  .week-day-card{
+    background:var(--card); border-radius:18px; padding:14px 16px; box-shadow:0 3px 10px rgba(155,130,190,0.07);
+    cursor:pointer; border:2px solid transparent;
+  }
+  .week-day-card.is-today{border-color:var(--accent-deep);}
+  .week-day-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px;}
+  .wd-name{font-family:'Fredoka'; font-weight:600; font-size:15px; color:var(--text); margin-right:7px;}
+  .wd-date{font-size:11.5px; color:var(--muted); font-weight:700;}
+  .wd-count{background:var(--bg); color:var(--accent-deep); font-weight:800; font-size:11.5px; padding:3px 10px; border-radius:999px; flex-shrink:0;}
+  .wd-items{display:flex; flex-direction:column; gap:6px;}
+  .wd-item{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text); min-width:0;}
+  .wd-item .dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+  .wd-time{color:var(--muted); font-weight:800; flex-shrink:0; min-width:64px;}
+  .wd-title{font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .wd-empty{font-size:12.5px; color:var(--muted); font-weight:600; font-style:italic;}
+
+  /* Day pills */
+  .day-scroll{
+    display:flex; gap:8px; overflow-x:auto; padding:18px 18px 4px; max-width:520px; margin:0 auto;
+    scrollbar-width:none;
+  }
+  .day-scroll::-webkit-scrollbar{display:none;}
+  .day-pill{
+    flex:0 0 auto; padding:9px 15px; border-radius:999px; border:none;
+    background:var(--card); color:var(--muted); font-weight:800; font-size:13px;
+    box-shadow:0 2px 6px rgba(155,130,190,0.08); cursor:pointer;
+  }
+  .day-pill.active{background:var(--accent-deep); color:#fff;}
+  .day-pill .sub{display:block; font-size:10px; font-weight:700; opacity:.75; margin-top:1px;}
+
+  .preview-note{
+    max-width:520px; margin:10px auto 0; padding:0 18px;
+    font-size:13px; color:var(--accent-deep); font-weight:700;
+    display:flex; align-items:center; gap:6px;
+  }
+
+  /* Timeline */
+  .timeline{max-width:520px; margin:0 auto; padding:16px 18px 24px; display:flex; flex-direction:column; gap:10px;}
+  .empty-state{
+    text-align:center; padding:50px 20px; color:var(--muted);
+  }
+  .empty-state .big{font-size:38px; margin-bottom:8px;}
+  .empty-state p{margin:4px 0; font-size:14px;}
+
+  .block-card{
+    background:var(--card); border-radius:var(--radius-sm); padding:14px 14px;
+    display:flex; align-items:center; gap:12px; box-shadow:0 3px 10px rgba(155,130,190,0.07);
+    border-left:6px solid var(--cat, var(--lavender));
+    transition:opacity .2s ease, transform .15s ease;
+  }
+  .block-card.done{opacity:.55;}
+  .block-card .check{
+    width:26px; height:26px; border-radius:50%; border:2.5px solid var(--cat, var(--lavender));
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; background:#fff;
+  }
+  .block-card .check.checked{background:var(--cat, var(--lavender));}
+  .block-card .check svg{width:14px; height:14px; display:none;}
+  .block-card .check.checked svg{display:block;}
+  .block-card .check.locked{cursor:default; background:rgba(255,255,255,0.6);}
+  .block-card .check.locked svg{display:block;}
+  .block-card .info{flex:1; min-width:0;}
+  .block-card .info .time{font-size:11.5px; font-weight:800; color:var(--muted); letter-spacing:.02em;}
+  .block-card .info .title{font-size:15.5px; font-weight:700; color:var(--text); margin-top:1px;}
+  .block-card .info .title.strike{text-decoration:line-through; text-decoration-color:var(--muted);}
+  .block-card .cat-tag{font-size:10.5px; font-weight:800; color:var(--accent-deep); margin-top:2px;}
+  .block-card .edit-btn{
+    width:30px; height:30px; border-radius:50%; border:none; background:var(--bg); color:var(--muted);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  }
+
+  .fab-row{max-width:520px; margin:0 auto; padding:0 18px 10px; display:flex; gap:10px;}
+  .fab{
+    flex:1; padding:14px; border-radius:16px; border:none; font-weight:800; font-size:14.5px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .fab.primary{background:var(--accent-deep); color:#fff; box-shadow:0 6px 16px rgba(155,130,190,0.3);}
+  .fab.secondary{background:var(--card); color:var(--accent-deep);}
+
+  /* Goals */
+  .goal-card{
+    background:var(--card); border-radius:var(--radius-sm); padding:16px; margin-bottom:10px;
+    box-shadow:0 3px 10px rgba(155,130,190,0.07); border-left:6px solid var(--cat, var(--mint));
+    display:flex; align-items:center; gap:12px;
+  }
+  .goal-card .ginfo{flex:1;}
+  .goal-card .gname{font-weight:700; font-size:15.5px;}
+  .goal-card .gstreak{font-size:13px; color:var(--muted); margin-top:3px; font-weight:700;}
+  .goal-card .gdo{
+    padding:10px 16px; border-radius:12px; border:none; font-weight:800; font-size:13px; cursor:pointer;
+    background:var(--cat, var(--mint)); color:#5B5065;
+  }
+  .goal-card .gdo.done{background:var(--accent-deep); color:#fff;}
+  .goal-card .edit-btn{width:28px; height:28px; border-radius:50%; border:none; background:var(--bg); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+
+  /* Settings */
+  .settings-section{max-width:520px; margin:0 auto; padding:8px 18px 90px;}
+  .settings-section h3{font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:22px 0 10px;}
+  .cat-row{
+    background:var(--card); border-radius:14px; padding:12px 14px; display:flex; align-items:center; gap:10px; margin-bottom:8px;
+    box-shadow:0 2px 8px rgba(155,130,190,0.06);
+  }
+  .swatch{width:26px; height:26px; border-radius:50%; flex-shrink:0; border:2px solid rgba(0,0,0,0.04); cursor:pointer;}
+  .cat-row input{border:none; background:transparent; font-family:'Nunito'; font-weight:700; font-size:14.5px; color:var(--text); flex:1; outline:none;}
+  .cat-row .del{background:none; border:none; color:var(--muted); cursor:pointer; padding:4px;}
+  .settings-btn{
+    width:100%; text-align:left; background:var(--card); border:none; border-radius:14px; padding:14px 16px;
+    font-weight:700; font-size:14.5px; color:var(--text); margin-bottom:8px; cursor:pointer;
+    box-shadow:0 2px 8px rgba(155,130,190,0.06); display:flex; align-items:center; justify-content:space-between;
+  }
+  .settings-btn.danger{color:var(--danger);}
+  .settings-btn small{display:block; color:var(--muted); font-weight:600; font-size:12px; margin-top:2px;}
+
+  /* Bottom nav */
+  .bottomnav{
+    position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.92); backdrop-filter:blur(14px);
+    border-top:1px solid var(--line); display:flex; padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    max-width:520px; margin:0 auto;
+  }
+  @supports (backdrop-filter: blur(1px)){}
+  .bottomnav{left:50%; transform:translateX(-50%); width:100%;}
+  .navbtn{
+    flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:var(--muted); font-size:11px; font-weight:800; padding:6px 0; cursor:pointer;
+  }
+  .navbtn.active{color:var(--accent-deep);}
+  .navbtn svg{width:22px; height:22px;}
+
+  /* Sheet / modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(91,80,101,0.35); display:none; align-items:flex-end; justify-content:center; z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .sheet{
+    background:var(--bg); width:100%; max-width:520px; border-radius:26px 26px 0 0; padding:20px 20px calc(24px + env(safe-area-inset-bottom));
+    max-height:88vh; overflow-y:auto; animation:up .22s ease;
+  }
+  @keyframes up{from{transform:translateY(20px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .sheet h2{margin:0 0 16px; font-size:19px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12.5px; font-weight:800; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.03em;}
+  .field input[type=text], .field input[type=time], .field input[type=number]{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); background:#fff;
+    font-family:'Nunito'; font-weight:700; font-size:15px; color:var(--text); outline:none;
+  }
+  .field input:focus{border-color:var(--accent);}
+  .cat-picker{display:flex; flex-wrap:wrap; gap:8px;}
+  .cat-chip{
+    padding:8px 13px; border-radius:999px; font-weight:800; font-size:13px; cursor:pointer; border:2px solid transparent; color:#5B5065;
+  }
+  .cat-chip.selected{border-color:var(--accent-deep);}
+  .sheet-actions{display:flex; gap:10px; margin-top:20px;}
+  .btn{padding:13px; border-radius:14px; border:none; font-weight:800; font-size:14.5px; cursor:pointer; flex:1;}
+  .btn.save{background:var(--accent-deep); color:#fff;}
+  .btn.cancel{background:var(--card); color:var(--muted);}
+  .btn.delete{background:#FBE4E9; color:var(--danger);}
+
+  .toast{
+    position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--accent-deep); color:#fff;
+    padding:11px 20px; border-radius:999px; font-weight:700; font-size:13.5px; box-shadow:var(--shadow); z-index:60;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{opacity:1; transform:translate(-50%,-6px);}
+
+  .swatch-picker{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .swatch-opt{width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid transparent;}
+  .swatch-opt.sel{border-color:var(--accent-deep);}
+
+  /* Progress view */
+  .section-label{font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:22px 0 10px; font-weight:800;}
+  .trend-chart{
+    display:flex; align-items:flex-end; gap:6px; height:120px; background:var(--card);
+    border-radius:16px; padding:14px 10px 10px; box-shadow:0 3px 10px rgba(155,130,190,0.07);
+  }
+  .trend-col{flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; min-width:0;}
+  .trend-bar-wrap{flex:1; display:flex; align-items:flex-end; width:100%;}
+  .trend-bar{width:100%; background:var(--dusty); border-radius:6px 6px 2px 2px; min-height:4px;}
+  .trend-bar.current{background:var(--accent-deep);}
+  .trend-label{font-size:9px; color:var(--muted); font-weight:700; margin-top:5px; white-space:nowrap;}
+
+  .heatmap{background:var(--card); border-radius:16px; padding:14px; box-shadow:0 3px 10px rgba(155,130,190,0.07);}
+  .heatmap-dowrow{display:flex; gap:4px; margin-bottom:5px;}
+  .heatmap-dowrow span{flex:1; text-align:center; font-size:9.5px; color:var(--muted); font-weight:800;}
+  .heatmap-week{display:flex; gap:4px; margin-bottom:4px;}
+  .hm-cell{flex:1; aspect-ratio:1; border-radius:5px; background:var(--accent-deep);}
+  .hm-empty{background:var(--line);}
+
+  .cat-breakdown{background:var(--card); border-radius:16px; padding:16px; box-shadow:0 3px 10px rgba(155,130,190,0.07);}
+  .cb-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .cb-row:last-child{margin-bottom:0;}
+  .cb-label{flex:0 0 120px; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .cb-label .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .cb-bar-wrap{flex:1; height:8px; background:var(--line); border-radius:999px; overflow:hidden;}
+  .cb-bar{height:100%; border-radius:999px;}
+  .cb-pct{font-size:12px; font-weight:800; color:var(--muted); width:34px; text-align:right; flex-shrink:0;}
+
+  .progress-footnote{font-size:11.5px; color:var(--muted); font-weight:600; line-height:1.5; margin:22px 0 10px;}
+
+  .month-picker-row{display:flex; align-items:center; justify-content:space-between; margin:22px 0 10px;}
+  .month-select{
+    border:1.5px solid var(--line); background:#fff; border-radius:12px; padding:8px 12px;
+    font-family:'Nunito'; font-weight:800; font-size:13px; color:var(--accent-deep); outline:none;
+  }
+  .month-summary-card{
+    background:var(--card); border-radius:16px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 3px 10px rgba(155,130,190,0.07); margin-bottom:12px;
+  }
+  .month-avg-badge{
+    font-family:'Fredoka'; font-weight:600; font-size:19px; color:var(--accent-deep);
+    background:var(--bg); padding:8px 16px; border-radius:14px;
+  }
+  .month-cal-cell{
+    flex:1; aspect-ratio:1; border-radius:7px; display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; font-weight:800; color:var(--text);
+  }
+  .month-cal-cell.empty{background:transparent;}
+
+  .inapp-warning{
+    background:#FFF3CD; color:#8A6D1D; font-size:12.5px; font-weight:700; line-height:1.5;
+    padding:12px 18px; text-align:center; border-bottom:2px solid #F5D98A;
+  }
+  .inapp-warning strong{color:#6B5010;}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<nav class="bottomnav">
+  <button class="navbtn active" data-view="schedule" onclick="setView('schedule')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+    Schedule
+  </button>
+  <button class="navbtn" data-view="goals" onclick="setView('goals')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 5.5 6 10.5A6 6 0 0 1 6 12.5C6 7.5 12 2 12 2z"/></svg>
+    Goals
+  </button>
+  <button class="navbtn" data-view="progress" onclick="setView('progress')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/></svg>
+    Progress
+  </button>
+  <button class="navbtn" data-view="settings" onclick="setView('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+    Settings
+  </button>
+</nav>
+
+<script>
+/* ---------- constants ---------- */
+const STORAGE_KEY = "syds-day-data-v4";
+const DAYS = ["mon","tue","wed","thu","fri","sat","sun"];
+const DAY_LABELS = {mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat",sun:"Sun"};
+const DAY_FULL = {mon:"Monday",tue:"Tuesday",wed:"Wednesday",thu:"Thursday",fri:"Friday",sat:"Saturday",sun:"Sunday"};
+const JS_DAY_INDEX = [6,0,1,2,3,4,5]; // JS getDay(): 0=Sun..6=Sat -> map to our DAYS index (mon=0)
+
+const QUOTES = [
+  "Don't be lazy and become a couch potato 🥔",
+  "Future you is watching. Don't embarrass her.",
+  "Small steps today, big flex tomorrow.",
+  "You didn't come this far to only come this far.",
+  "The couch will still be there later. Go earn it.",
+  "Discipline now, Netflix guilt-free later.",
+  "Nobody regrets the workout they finished.",
+  "One more page. One more rep. One more win.",
+  "Show up for yourself before anyone else.",
+  "A little progress each day adds up to big results.",
+  "Consistency beats motivation every time.",
+  "You're one 'yes' away from a better day.",
+  "Comfort zones don't build character.",
+  "Do it now. Future you says thanks.",
+  "Today's effort is tomorrow's confidence."
+];
+function todaysQuote(){
+  const d = new Date();
+  const dayNum = Math.floor(d.getTime()/86400000);
+  return QUOTES[dayNum % QUOTES.length];
+}
+const PALETTE = ["#C9B6E4","#FFD6BA","#B8E0D2","#AEDFF7","#F7C6D9","#FFF3B0","#E5C9F5","#C7EEDC","#D6E5FA","#D9CBEA","#FFE0B5"];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function todayKey(){ return DAYS[JS_DAY_INDEX[new Date().getDay()]]; }
+function fmtTime(t){ // "HH:MM" -> "5:30 AM"
+  let [h,m] = t.split(":").map(Number);
+  const ap = h>=12 ? "PM":"AM";
+  h = h%12; if(h===0) h=12;
+  return h+":"+String(m).padStart(2,"0")+" "+ap;
+}
+function addMinutes(t, mins){
+  let [h,m]=t.split(":").map(Number);
+  let total = h*60+m+mins;
+  total = ((total%1440)+1440)%1440;
+  return String(Math.floor(total/60)).padStart(2,"0")+":"+String(total%60).padStart(2,"0");
+}
+
+/* ---------- default data (seeded from Syd's PDF where confidently readable) ---------- */
+function defaultData(){
+  const cats = [
+    {id:"routine", name:"Music", color:"#D5E3F8"},
+    {id:"fitness", name:"Fitness", color:"#FCDFB4"},
+    {id:"lia", name:"LIA", color:"#B0DDF4"},
+    {id:"study", name:"Japanese Study", color:"#F5C5D7"},
+    {id:"chores", name:"Chores", color:"#B8DED1"},
+    {id:"dog", name:"Dog Walk", color:"#FCF1B2"},
+    {id:"meals", name:"Meals", color:"#FCDFB4"},
+    {id:"selfcare", name:"Personal Care", color:"#C8B5E2"},
+    {id:"downtime", name:"Downtime", color:"#C7ECDB"},
+    {id:"faith", name:"Faith & Life", color:"#D6E5FA"},
+    {id:"sleep", name:"Sleep", color:"#D9CBEA"}
+  ];
+  const mk = (time,title,categoryId,duration)=>({id:uid(),time,title,categoryId,duration});
+  const template = {
+    mon:[
+      mk("05:30","Wake Up","selfcare",30),
+      mk("06:00","Run","fitness",60),
+      mk("07:00","Get Ready","selfcare",60),
+      mk("08:00","LIA","lia",90),
+      mk("09:30","Walk Dog","dog",30),
+      mk("12:00","Chores","chores",30),
+      mk("13:00","Eat Lunch","meals",30),
+      mk("13:30","Genki Grammar","study",30),
+      mk("14:00","Japanese Journal","study",30),
+      mk("14:30","LIA","lia",90),
+      mk("16:30","Walk Dog","dog",30),
+      mk("18:30","Shower / Eat Dinner","meals",60),
+      mk("19:30","Skincare","selfcare",30),
+      mk("20:00","Vocabulary","study",30),
+      mk("22:00","Go to Bed","sleep",0)
+    ],
+    tue:[
+      mk("05:30","Wake Up","selfcare",30),
+      mk("06:00","Weights/Fitness Tests","fitness",60),
+      mk("07:00","Get Ready","selfcare",60),
+      mk("08:00","LIA","lia",90),
+      mk("09:30","Walk Dog","dog",30),
+      mk("12:00","Chores","chores",30),
+      mk("13:00","TikTok Speaking Practice","study",30),
+      mk("13:30","Eat Lunch","meals",30),
+      mk("14:00","Listening Practice","study",30),
+      mk("14:30","LIA","lia",90),
+      mk("16:30","Walk Dog","dog",30),
+      mk("18:30","Shower / Eat Dinner","meals",60),
+      mk("19:30","Skincare","selfcare",30),
+      mk("20:00","Vocabulary","study",30),
+      mk("22:00","Go to Bed","sleep",0)
+    ],
+    wed:[
+      mk("05:30","Wake Up","selfcare",30),
+      mk("06:00","Weights","fitness",60),
+      mk("07:00","Get Ready","selfcare",60),
+      mk("08:00","LIA","lia",90),
+      mk("09:30","Walk Dog","dog",30),
+      mk("12:00","Chores","chores",30),
+      mk("13:00","Eat Lunch","meals",30),
+      mk("13:30","Kanji","study",30),
+      mk("14:00","Japanese Journal","study",30),
+      mk("14:30","LIA","lia",90),
+      mk("16:30","Walk Dog","dog",30),
+      mk("18:30","Shower / Eat Dinner","meals",60),
+      mk("19:30","Skincare","selfcare",30),
+      mk("20:00","Listening Practice","study",30),
+      mk("22:00","Go to Bed","sleep",0)
+    ],
+    thu:[
+      mk("05:30","Wake Up","selfcare",30),
+      mk("06:00","Run","fitness",60),
+      mk("07:00","Get Ready","selfcare",60),
+      mk("08:00","LIA","lia",90),
+      mk("09:30","Call with Hannah","fitness",30),
+      mk("12:00","Chores","chores",30),
+      mk("13:00","TikTok Speaking Practice","study",30),
+      mk("13:30","Japanese Journal","study",30),
+      mk("14:00","LIA","lia",90),
+      mk("16:30","Walk Dog","dog",30),
+      mk("18:30","Shower / Eat Dinner","selfcare",60),
+      mk("19:30","Skincare","selfcare",30),
+      mk("20:00","Vocabulary","study",30),
+      mk("22:00","Go to Bed","sleep",0)
+    ],
+    fri:[
+      mk("06:30","Wake Up","selfcare",30),
+      mk("07:00","Run","fitness",45),
+      mk("07:45","Get Ready","selfcare",30),
+      mk("08:15","LIA","lia",90),
+      mk("12:00","Chores","chores",30),
+      mk("13:00","Genki Grammar","study",30),
+      mk("13:30","Listening Practice","study",30),
+      mk("14:00","LIA","lia",90),
+      mk("16:30","Walk Dog","dog",30),
+      mk("18:30","Shower / Eat Dinner","selfcare",60),
+      mk("19:30","Skincare","selfcare",30),
+      mk("20:00","Genshin/Netflix","downtime",60),
+      mk("22:00","Go to Bed","sleep",0)
+    ],
+    sat:[
+      mk("08:00","Wake Up","selfcare",30),
+      mk("08:30","Walk Dog","dog",30),
+      mk("09:00","Weights","fitness",60),
+      mk("10:00","Get Ready","selfcare",30),
+      mk("10:30","Chores","chores",60),
+      mk("13:00","Vocabulary","study",30),
+      mk("13:30","Kanji","study",30),
+      mk("14:00","Japanese Journal","study",30),
+      mk("14:30","Genshin/Netflix","downtime",90),
+      mk("16:30","Walk Dog","dog",30),
+      mk("17:00","Get Ready/Warm-up","selfcare",30),
+      mk("17:30","ROE Rehearsal","faith",120),
+      mk("19:30","Skincare","selfcare",30),
+      mk("22:00","Go to Bed","sleep",0)
+    ],
+    sun:[
+      mk("09:00","Wake Up","selfcare",20),
+      mk("09:20","Get Ready","selfcare",25),
+      mk("09:45","Walk Dog","dog",15),
+      mk("10:00","Church","faith",90),
+      mk("11:30","Relax","downtime",90),
+      mk("13:00","Genki Grammar","study",30),
+      mk("13:30","Listening Practice","study",30),
+      mk("14:00","Kanji","study",30),
+      mk("14:30","Chores","chores",30),
+      mk("15:00","Genshin/Netflix","downtime",60),
+      mk("16:00","Cook","meals",45),
+      mk("18:00","Shower / Eat Dinner","selfcare",60),
+      mk("19:30","Skincare","selfcare",30),
+      mk("21:30","Go to Bed","sleep",0)
+    ]
+  };
+  const goals = [
+    {id:uid(), name:"Japanese practice", categoryId:"study", streak:0, lastDone:null},
+    {id:uid(), name:"Run", categoryId:"fitness", streak:0, lastDone:null},
+    {id:uid(), name:"Skincare routine", categoryId:"selfcare", streak:0, lastDone:null}
+  ];
+  return {categories:cats, template, goals, completions:{}};
+}
+
+let data = load();
+function load(){
+  let d;
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) d = JSON.parse(raw);
+  }catch(e){}
+  if(!d){
+    d = defaultData();
+  }
+  if(!d.meta || !d.meta.startDate){
+    const completedDates = Object.keys(d.completions||{}).sort();
+    d.meta = {startDate: completedDates[0] || todayStr()};
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  return d;
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function dateToStr(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+
+function catById(id){ return data.categories.find(c=>c.id===id) || {name:"General", color:"#C9B6E4"}; }
+
+/* ---------- state ---------- */
+let currentView = "schedule";
+let selectedDay = todayKey();
+let scheduleMode = "day"; // "day" | "week"
+let selectedMonth = null;
+
+function setView(v){
+  currentView = v;
+  document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
+  render();
+}
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1600);
+}
+
+/* ---------- rendering ---------- */
+function detectInAppBrowser(){
+  const ua = navigator.userAgent || "";
+  if(/FBAN|FBAV|FB_IAB/i.test(ua)) return "Facebook Messenger";
+  if(/Instagram/i.test(ua)) return "Instagram";
+  if(/MicroMessenger/i.test(ua)) return "WeChat";
+  if(/Line\//i.test(ua)) return "LINE";
+  if(/TikTok/i.test(ua)) return "TikTok";
+  if(/Twitter/i.test(ua)) return "Twitter/X";
+  if(/WhatsApp/i.test(ua)) return "WhatsApp";
+  return null;
+}
+const inAppBrowserName = detectInAppBrowser();
+
+function render(){
+  const app = document.getElementById("app");
+  let html = "";
+  if(currentView==="schedule") html = renderSchedule();
+  else if(currentView==="goals") html = renderGoals();
+  else if(currentView==="progress") html = renderProgress();
+  else html = renderSettings();
+
+  if(inAppBrowserName){
+    html = `
+      <div class="inapp-warning">
+        ⚠️ <strong>Heads up:</strong> you're viewing this inside ${inAppBrowserName}'s built-in browser.
+        Changes you make right now might not actually save. Tap the <strong>•••</strong> or share icon above
+        and choose <strong>Open in Safari</strong>, then use Safari's Share → <strong>Add to Home Screen</strong>
+        so everything saves properly from now on.
+      </div>
+    ` + html;
+  }
+  app.innerHTML = html;
+}
+
+function weekDates(){
+  const now = new Date();
+  const jsDay = now.getDay(); // 0 Sun..6 Sat
+  const offsetToMonday = jsDay===0 ? -6 : 1-jsDay;
+  const monday = new Date(now);
+  monday.setDate(now.getDate()+offsetToMonday);
+  const map = {};
+  DAYS.forEach((d,i)=>{
+    const dt = new Date(monday);
+    dt.setDate(monday.getDate()+i);
+    map[d] = dt;
+  });
+  return map;
+}
+
+function setScheduleMode(m){
+  scheduleMode = m;
+  render();
+}
+
+function goToDayFromWeek(d){
+  selectedDay = d;
+  scheduleMode = "day";
+  render();
+}
+
+function renderSchedule(){
+  const now = new Date();
+  const dateLabel = now.toLocaleDateString(undefined,{weekday:"long", month:"long", day:"numeric"});
+
+  let header = `
+    <div class="topbar">
+      <div class="header-row">
+        <img src="avatar.png" alt="Syd" class="avatar" onerror="this.style.display='none'">
+        <div>
+          <div class="greet">${dateLabel}</div>
+          <h1>Hey Syd 👋</h1>
+        </div>
+      </div>
+      <div class="quote-banner">💬 ${escapeHtml(todaysQuote())}</div>
+      <div class="mode-toggle">
+        <button class="mode-btn ${scheduleMode==='day'?'active':''}" onclick="setScheduleMode('day')">Day</button>
+        <button class="mode-btn ${scheduleMode==='week'?'active':''}" onclick="setScheduleMode('week')">Week</button>
+      </div>
+  `;
+
+  if(scheduleMode==="week"){
+    return header + `</div>` + renderWeekBody();
+  }
+
+  const isToday = selectedDay === todayKey();
+  const blocks = [...(data.template[selectedDay]||[])].sort((a,b)=>a.time.localeCompare(b.time));
+  const t = todayStr();
+  const done = data.completions[t] || {};
+  const doneCount = isToday ? blocks.filter(b=>done[b.id]).length : 0;
+  const total = blocks.length;
+  const pct = total ? Math.round((doneCount/total)*100) : 0;
+  const circ = 2*Math.PI*26;
+  const offset = circ - (pct/100)*circ;
+
+  let html = header + `
+      <div class="progress-card">
+        <div class="progress-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="26" stroke="rgba(255,255,255,0.35)" stroke-width="7" fill="none"/>
+            <circle cx="32" cy="32" r="26" stroke="#fff" stroke-width="7" fill="none"
+              stroke-dasharray="${circ}" stroke-dashoffset="${isToday?offset:circ}" stroke-linecap="round"/>
+          </svg>
+          <div class="pct">${isToday?pct+"%":"–"}</div>
+        </div>
+        <div class="progress-text">
+          <div class="line1">${isToday ? (total? doneCount+" of "+total+" done":"Nothing planned yet") : "Viewing "+DAY_FULL[selectedDay]}</div>
+          <div class="line2">${isToday ? (pct===100 && total ? "All done today — nice work! 🎉" : "You've got this today.") : "Tap a day to see its plan."}</div>
+        </div>
+      </div>
+    </div>
+    <div class="day-scroll">
+      ${DAYS.map(d=>`
+        <button class="day-pill ${d===selectedDay?'active':''}" onclick="selectDay('${d}')">
+          ${DAY_LABELS[d]}${d===todayKey()?'<span class="sub">Today</span>':''}
+        </button>`).join("")}
+    </div>
+  `;
+
+  if(!isToday){
+    html += `<div class="preview-note">🔒 Editing ${DAY_FULL[selectedDay]}'s plan — only today can be checked off, no going back to fudge it</div>`;
+  }
+
+  html += `<div class="timeline">`;
+  if(blocks.length===0){
+    html += `<div class="empty-state">
+      <div class="big">🌤️</div>
+      <p><strong>No plan for ${DAY_FULL[selectedDay]} yet</strong></p>
+      <p>Add a block below, or copy a day that's already filled in.</p>
+    </div>`;
+  } else {
+    blocks.forEach(b=>{
+      const cat = catById(b.categoryId);
+      const isDone = isToday && done[b.id];
+      html += `
+        <div class="block-card ${isDone?'done':''}" style="--cat:${cat.color}">
+          ${isToday ? `
+          <div class="check ${isDone?'checked':''}" onclick="toggleDone('${b.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5B5065" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>` : `<div class="check locked" style="border-color:${cat.color}">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="${cat.color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          </div>`}
+          <div class="info" onclick="openEditBlock('${b.id}')">
+            <div class="time">${fmtTime(b.time)}${b.duration?(" · "+(b.duration>=60?(Math.round(b.duration/60*10)/10)+"h":b.duration+"m")):""}</div>
+            <div class="title ${isDone?'strike':''}">${escapeHtml(b.title)}</div>
+            <div class="cat-tag">${escapeHtml(cat.name)}</div>
+          </div>
+          <button class="edit-btn" onclick="openEditBlock('${b.id}')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+        </div>`;
+    });
+  }
+  html += `</div>`;
+
+  html += `
+    <div class="fab-row">
+      <button class="fab secondary" onclick="openCopyDay()">⧉ Copy a day</button>
+      <button class="fab primary" onclick="openAddBlock()">+ Add block</button>
+    </div>
+  `;
+  return html;
+}
+
+function renderWeekBody(){
+  const dates = weekDates();
+  const tKey = todayKey();
+  const totalWeekBlocks = DAYS.reduce((sum,d)=>sum+(data.template[d]||[]).length,0);
+  const plannedDays = DAYS.filter(d=>(data.template[d]||[]).length>0).length;
+
+  let html = `
+    <div class="wrap">
+      <div class="week-summary">
+        <div><strong>${totalWeekBlocks}</strong> things planned</div>
+        <div><strong>${plannedDays}</strong> of 7 days filled in</div>
+      </div>
+    </div>
+    <div class="timeline">
+  `;
+
+  DAYS.forEach(d=>{
+    const blocks = [...(data.template[d]||[])].sort((a,b)=>a.time.localeCompare(b.time));
+    const dt = dates[d];
+    const dateLabel = dt.toLocaleDateString(undefined,{month:"short", day:"numeric"});
+    const isToday = d===tKey;
+    html += `
+      <div class="week-day-card ${isToday?'is-today':''}" onclick="goToDayFromWeek('${d}')">
+        <div class="week-day-head">
+          <div>
+            <span class="wd-name">${DAY_FULL[d]}</span>
+            <span class="wd-date">${dateLabel}${isToday?' · Today':''}</span>
+          </div>
+          <span class="wd-count">${blocks.length}</span>
+        </div>
+        <div class="wd-items">
+          ${blocks.length===0
+            ? `<div class="wd-empty">Nothing planned yet — tap to add</div>`
+            : blocks.map(b=>{
+                const cat = catById(b.categoryId);
+                return `<div class="wd-item"><span class="dot" style="background:${cat.color}"></span><span class="wd-time">${fmtTime(b.time)}</span><span class="wd-title">${escapeHtml(b.title)}</span></div>`;
+              }).join("")
+          }
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+function dayStats(dateStr){
+  const d = new Date(dateStr+"T00:00:00");
+  const weekday = DAYS[JS_DAY_INDEX[d.getDay()]];
+  const blocks = data.template[weekday]||[];
+  const done = data.completions[dateStr]||{};
+  const doneCount = blocks.filter(b=>done[b.id]).length;
+  const total = blocks.length;
+  const pct = total ? Math.round((doneCount/total)*100) : null;
+  return {doneCount, total, pct, weekday};
+}
+
+function monthOptions(){
+  const start = data.meta.startDate.slice(0,7);
+  const now = new Date();
+  const nowKey = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+  let [y,m] = start.split("-").map(Number);
+  const [ny,nm] = nowKey.split("-").map(Number);
+  const opts = [];
+  while(y<ny || (y===ny && m<=nm)){
+    const key = y+"-"+String(m).padStart(2,"0");
+    const label = new Date(y, m-1, 1).toLocaleDateString(undefined,{month:"long", year:"numeric"});
+    opts.push({key,label});
+    m++; if(m>12){m=1; y++;}
+  }
+  return opts.reverse();
+}
+
+function buildMonthCalendar(mKey){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const [y,m] = mKey.split("-").map(Number);
+  const monthIndex = m-1;
+  const numDays = new Date(y, monthIndex+1, 0).getDate();
+  const firstWeekday = (new Date(y, monthIndex, 1).getDay()+6)%7; // Mon=0..Sun=6
+  const cells = [];
+  for(let i=0;i<firstWeekday;i++) cells.push(null);
+  const startDate = data.meta.startDate;
+  let sumPct=0, countedDays=0, plannedDays=0;
+  for(let day=1; day<=numDays; day++){
+    const dt = new Date(y, monthIndex, day);
+    const dateStr = dateToStr(dt);
+    const isFuture = dt > today;
+    const isBeforeStart = dateStr < startDate;
+    const tracked = !isFuture && !isBeforeStart;
+    const stats = dayStats(dateStr);
+    if(tracked && stats.total>0){ sumPct += stats.pct; countedDays++; plannedDays++; }
+    cells.push({dateStr, day, ...stats, tracked});
+  }
+  while(cells.length % 7 !== 0) cells.push(null);
+  const weeks = [];
+  for(let i=0;i<cells.length;i+=7) weeks.push(cells.slice(i,i+7));
+  return {weeks, avgPct: countedDays ? Math.round(sumPct/countedDays) : null, plannedDays};
+}
+
+function monthCategoryBreakdown(mKey){
+  const [y,m] = mKey.split("-").map(Number);
+  const monthIndex = m-1;
+  const numDays = new Date(y, monthIndex+1, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const startDate = data.meta.startDate;
+  const catTotals = {};
+  for(let day=1; day<=numDays; day++){
+    const dt = new Date(y, monthIndex, day);
+    if(dt > today) continue;
+    const dateStr = dateToStr(dt);
+    if(dateStr < startDate) continue;
+    const weekday = DAYS[JS_DAY_INDEX[dt.getDay()]];
+    const blocks = data.template[weekday]||[];
+    const done = data.completions[dateStr]||{};
+    blocks.forEach(b=>{
+      if(!catTotals[b.categoryId]) catTotals[b.categoryId] = {done:0,total:0};
+      catTotals[b.categoryId].total++;
+      if(done[b.id]) catTotals[b.categoryId].done++;
+    });
+  }
+  return Object.keys(catTotals).map(id=>{
+    const c = catById(id);
+    const t = catTotals[id];
+    return {id, name:c.name, color:c.color, pct: t.total? Math.round(t.done/t.total*100):0, total:t.total};
+  }).filter(r=>r.total>=2).sort((a,b)=>b.pct-a.pct);
+}
+
+function selectMonth(v){ selectedMonth = v; render(); }
+
+function renderProgress(){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const jsDay = today.getDay();
+  const offsetToMonday = jsDay===0 ? -6 : 1-jsDay;
+  const thisMonday = new Date(today);
+  thisMonday.setDate(today.getDate()+offsetToMonday);
+  const startDate = data.meta.startDate;
+
+  const WEEKS = 8;
+  const weeks = [];
+  for(let w=WEEKS-1; w>=0; w--){
+    const weekStart = new Date(thisMonday);
+    weekStart.setDate(thisMonday.getDate() - w*7);
+    const days = [];
+    let sumPct=0, countedDays=0;
+    for(let i=0;i<7;i++){
+      const dt = new Date(weekStart);
+      dt.setDate(weekStart.getDate()+i);
+      const dateStr = dateToStr(dt);
+      const isFuture = dt > today;
+      const isBeforeStart = dateStr < startDate;
+      const stats = dayStats(dateStr);
+      const tracked = !isFuture && !isBeforeStart;
+      days.push({dateStr, ...stats, isFuture, isBeforeStart, tracked});
+      if(tracked && stats.total>0){ sumPct += stats.pct; countedDays++; }
+    }
+    const avgPct = countedDays ? Math.round(sumPct/countedDays) : null;
+    const label = weekStart.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+    weeks.push({label, days, avgPct, isCurrent: w===0});
+  }
+
+  const currentWeekAvg = weeks[weeks.length-1].avgPct;
+  const circ2 = 2*Math.PI*26;
+
+  if(!selectedMonth){
+    const now = new Date();
+    selectedMonth = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+  }
+  const mOpts = monthOptions();
+  const monthLabel = (mOpts.find(o=>o.key===selectedMonth)||{}).label || selectedMonth;
+  const cal = buildMonthCalendar(selectedMonth);
+  const monthCatRows = monthCategoryBreakdown(selectedMonth);
+
+  let html = `
+    <div class="topbar">
+      <div class="greet">Progress</div>
+      <h1>How she's doing 📈</h1>
+    </div>
+    <div class="wrap">
+      <div class="progress-card" style="margin-bottom:6px;">
+        <div class="progress-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="26" stroke="rgba(255,255,255,0.35)" stroke-width="7" fill="none"/>
+            <circle cx="32" cy="32" r="26" stroke="#fff" stroke-width="7" fill="none"
+              stroke-dasharray="${circ2}" stroke-dashoffset="${currentWeekAvg!==null ? circ2-(currentWeekAvg/100)*circ2 : circ2}" stroke-linecap="round"/>
+          </svg>
+          <div class="pct">${currentWeekAvg!==null?currentWeekAvg+"%":"–"}</div>
+        </div>
+        <div class="progress-text">
+          <div class="line1">This week's average</div>
+          <div class="line2">${currentWeekAvg===null? "No tracked days yet" : currentWeekAvg>=80 ? "Really strong week 🎉" : currentWeekAvg>=50 ? "Solid, keep going" : "A slower week — that's okay"}</div>
+        </div>
+      </div>
+
+      <h3 class="section-label">Last ${WEEKS} weeks</h3>
+      <div class="trend-chart">
+        ${weeks.map(w=>`
+          <div class="trend-col">
+            <div class="trend-bar-wrap">
+              <div class="trend-bar ${w.isCurrent?'current':''}" style="height:${w.avgPct===null?4:Math.max(6,w.avgPct)}%" title="${w.label}: ${w.avgPct===null?'no data':w.avgPct+'%'}"></div>
+            </div>
+            <div class="trend-label">${w.label}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="month-picker-row">
+        <h3 class="section-label" style="margin:0;">Browse by month</h3>
+        <select class="month-select" onchange="selectMonth(this.value)">
+          ${mOpts.map(o=>`<option value="${o.key}" ${o.key===selectedMonth?'selected':''}>${o.label}</option>`).join("")}
+        </select>
+      </div>
+
+      <div class="month-summary-card">
+        <div>
+          <div class="line1" style="font-family:'Fredoka'; font-weight:600; font-size:16px; color:var(--text);">${monthLabel}</div>
+          <div class="line2" style="font-size:12.5px; color:var(--muted); font-weight:700; margin-top:2px;">${cal.plannedDays} day${cal.plannedDays===1?'':'s'} tracked</div>
+        </div>
+        <div class="month-avg-badge">${cal.avgPct===null?'–':cal.avgPct+'%'}</div>
+      </div>
+
+      <div class="heatmap month-cal">
+        <div class="heatmap-dowrow">${["M","T","W","T","F","S","S"].map(d=>`<span>${d}</span>`).join("")}</div>
+        ${cal.weeks.map(week=>`
+          <div class="heatmap-week">
+            ${week.map(d=>{
+              if(!d) return `<div class="month-cal-cell empty"></div>`;
+              let cls = "month-cal-cell";
+              let style = "";
+              if(!d.tracked || d.total===0) cls += " hm-empty";
+              else style = `background:rgba(155,130,190,${Math.max(0.16, d.pct/100)})`;
+              const title = !d.tracked ? "" : `${d.dateStr}: ${d.total===0?'nothing planned':d.pct+'% ('+d.doneCount+'/'+d.total+')'}`;
+              return `<div class="${cls}" style="${style}" title="${title}">${d.day}</div>`;
+            }).join("")}
+          </div>
+        `).join("")}
+      </div>
+
+      ${monthCatRows.length ? `
+        <h3 class="section-label">${monthLabel} by category</h3>
+        <div class="cat-breakdown">
+          ${monthCatRows.map(r=>`
+            <div class="cb-row">
+              <div class="cb-label"><span class="dot" style="background:${r.color}"></span>${escapeHtml(r.name)}</div>
+              <div class="cb-bar-wrap"><div class="cb-bar" style="width:${r.pct}%; background:${r.color}"></div></div>
+              <div class="cb-pct">${r.pct}%</div>
+            </div>
+          `).join("")}
+        </div>
+      ` : `<p class="progress-footnote" style="margin-top:14px;">No tracked days in ${monthLabel} yet.</p>`}
+
+      <p class="progress-footnote">Tracking started ${startDate} — anything before that isn't shown. If a day's plan gets edited later, older stats for that day may shift slightly since they're calculated against the current template.</p>
+    </div>
+  `;
+  return html;
+}
+
+function renderGoals(){
+  const t = todayStr();
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yStr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+
+  let html = `
+    <div class="topbar">
+      <div class="greet">Habits & Goals</div>
+      <h1>Keep the streak 🔥</h1>
+    </div>
+    <div class="settings-section" style="padding-top:0;">
+  `;
+  if(data.goals.length===0){
+    html += `<div class="empty-state"><div class="big">🌱</div><p><strong>No goals yet</strong></p><p>Add something you want to build a habit around.</p></div>`;
+  }
+  data.goals.forEach(g=>{
+    const cat = catById(g.categoryId);
+    const doneToday = g.lastDone === t;
+    html += `
+      <div class="goal-card" style="--cat:${cat.color}">
+        <div class="ginfo">
+          <div class="gname">${escapeHtml(g.name)}</div>
+          <div class="gstreak">🔥 ${g.streak} day${g.streak===1?'':'s'} · ${escapeHtml(cat.name)}</div>
+        </div>
+        <button class="edit-btn" onclick="openEditGoal('${g.id}')" style="margin-right:4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+        <button class="gdo ${doneToday?'done':''}" onclick="toggleGoal('${g.id}')">${doneToday?'Done ✓':'Mark done'}</button>
+      </div>`;
+  });
+  html += `</div>
+    <div class="fab-row">
+      <button class="fab primary" style="flex:1" onclick="openAddGoal()">+ Add goal</button>
+    </div>`;
+  return html;
+}
+
+function renderSettings(){
+  let html = `
+    <div class="topbar">
+      <div class="greet">Settings</div>
+      <h1>Make it yours</h1>
+    </div>
+    <div class="settings-section" style="padding-top:0;">
+      <h3>Categories</h3>
+  `;
+  data.categories.forEach(c=>{
+    html += `
+      <div class="cat-row">
+        <div class="swatch" style="background:${c.color}" onclick="openColorPicker('${c.id}')"></div>
+        <input type="text" value="${escapeAttr(c.name)}" onchange="renameCategory('${c.id}', this.value)">
+        <button class="del" onclick="deleteCategory('${c.id}')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>`;
+  });
+  html += `
+      <button class="settings-btn" onclick="addCategory()">+ Add category</button>
+
+      <h3>Your Data</h3>
+      <button class="settings-btn" onclick="exportData()">
+        <span>Export backup<small>Save a copy of everything as a file</small></span> ⬇️
+      </button>
+      <button class="settings-btn" onclick="document.getElementById('importInput').click()">
+        <span>Import backup<small>Restore from an exported file</small></span> ⬆️
+      </button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="settings-btn danger" onclick="resetAll()">
+        <span>Reset everything<small>Clear the schedule, goals, and progress</small></span> ⚠️
+      </button>
+
+      <h3>About</h3>
+      <div class="cat-row" style="display:block;">
+        <p style="margin:0 0 8px; font-weight:700; font-size:14px;">Syd's Day is fully offline.</p>
+        <p style="margin:0; font-size:13px; color:var(--muted); font-weight:600; line-height:1.5;">
+          Everything you add is saved only on this phone — nothing is sent anywhere.
+          Tap "Export backup" occasionally so you always have a copy saved.
+        </p>
+      </div>
+    </div>
+  `;
+  return html;
+}
+
+function escapeHtml(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+function escapeAttr(s){ return String(s).replace(/"/g,"&quot;"); }
+
+/* ---------- schedule actions ---------- */
+function selectDay(d){ selectedDay = d; render(); }
+
+function toggleDone(blockId){
+  const t = todayStr();
+  if(!data.completions[t]) data.completions[t] = {};
+  data.completions[t][blockId] = !data.completions[t][blockId];
+  save(); render();
+}
+
+function openAddBlock(){
+  renderBlockSheet(null);
+}
+function openEditBlock(id){
+  const b = (data.template[selectedDay]||[]).find(x=>x.id===id);
+  renderBlockSheet(b);
+}
+function renderBlockSheet(block){
+  const isEdit = !!block;
+  const sheet = document.getElementById("sheet");
+  sheet.innerHTML = `
+    <h2>${isEdit?'Edit block':'Add block'} · ${DAY_FULL[selectedDay]}</h2>
+    <div class="field"><label>Title</label>
+      <input type="text" id="f-title" value="${isEdit?escapeAttr(block.title):''}" placeholder="e.g. Kanji practice">
+    </div>
+    <div style="display:flex; gap:10px;">
+      <div class="field" style="flex:1;"><label>Start time</label>
+        <input type="time" id="f-time" value="${isEdit?block.time:'09:00'}">
+      </div>
+      <div class="field" style="flex:1;"><label>Minutes</label>
+        <input type="number" id="f-dur" min="0" step="5" value="${isEdit?block.duration:30}">
+      </div>
+    </div>
+    <div class="field"><label>Category</label>
+      <div class="cat-picker" id="f-cats">
+        ${data.categories.map(c=>`<div class="cat-chip ${isEdit && block.categoryId===c.id ? 'selected':''}" data-cat="${c.id}" style="background:${c.color}" onclick="pickCat('${c.id}')">${escapeHtml(c.name)}</div>`).join("")}
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn cancel" onclick="closeSheet()">Cancel</button>
+      ${isEdit ? `<button class="btn delete" onclick="deleteBlock('${block.id}')">Delete</button>`:''}
+      <button class="btn save" onclick="saveBlock(${isEdit?`'${block.id}'`:'null'})">Save</button>
+    </div>
+  `;
+  selectedCat = isEdit ? block.categoryId : (data.categories[0] ? data.categories[0].id : null);
+  openSheet();
+}
+let selectedCat = null;
+function pickCat(id){
+  selectedCat = id;
+  document.querySelectorAll(".cat-chip").forEach(el=>el.classList.toggle("selected", el.dataset.cat===id));
+}
+function saveBlock(id){
+  const title = document.getElementById("f-title").value.trim();
+  const time = document.getElementById("f-time").value;
+  const dur = parseInt(document.getElementById("f-dur").value)||0;
+  if(!title){ showToast("Give it a title first"); return; }
+  if(!data.template[selectedDay]) data.template[selectedDay]=[];
+  if(id){
+    const b = data.template[selectedDay].find(x=>x.id===id);
+    b.title=title; b.time=time; b.duration=dur; b.categoryId=selectedCat;
+  } else {
+    data.template[selectedDay].push({id:uid(), title, time, duration:dur, categoryId:selectedCat});
+  }
+  save(); closeSheet(); render();
+  showToast("Saved");
+}
+function deleteBlock(id){
+  data.template[selectedDay] = data.template[selectedDay].filter(x=>x.id!==id);
+  save(); closeSheet(); render();
+  showToast("Deleted");
+}
+
+function openCopyDay(){
+  const sheet = document.getElementById("sheet");
+  sheet.innerHTML = `
+    <h2>Copy into ${DAY_FULL[selectedDay]}</h2>
+    <p style="font-size:13.5px; color:var(--muted); font-weight:600; margin-top:-8px;">This replaces ${DAY_FULL[selectedDay]}'s current plan.</p>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+      ${DAYS.filter(d=>d!==selectedDay).map(d=>`
+        <button class="settings-btn" onclick="copyDay('${d}')">${DAY_FULL[d]} <small>${(data.template[d]||[]).length} blocks</small></button>
+      `).join("")}
+    </div>
+    <div class="sheet-actions"><button class="btn cancel" onclick="closeSheet()">Cancel</button></div>
+  `;
+  openSheet();
+}
+function copyDay(fromDay){
+  data.template[selectedDay] = (data.template[fromDay]||[]).map(b=>({...b, id:uid()}));
+  save(); closeSheet(); render();
+  showToast("Copied "+DAY_FULL[fromDay]);
+}
+
+/* ---------- goals actions ---------- */
+function toggleGoal(id){
+  const g = data.goals.find(x=>x.id===id);
+  const t = todayStr();
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yStr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  if(g.lastDone === t){
+    // undo today
+    g.streak = Math.max(0, g.streak-1);
+    g.lastDone = null;
+  } else {
+    g.streak = (g.lastDone === yStr) ? g.streak+1 : 1;
+    g.lastDone = t;
+  }
+  save(); render();
+}
+function openAddGoal(){ renderGoalSheet(null); }
+function openEditGoal(id){ renderGoalSheet(data.goals.find(g=>g.id===id)); }
+function renderGoalSheet(goal){
+  const isEdit = !!goal;
+  const sheet = document.getElementById("sheet");
+  sheet.innerHTML = `
+    <h2>${isEdit?'Edit goal':'Add goal'}</h2>
+    <div class="field"><label>Name</label>
+      <input type="text" id="g-title" value="${isEdit?escapeAttr(goal.name):''}" placeholder="e.g. Read for 20 minutes">
+    </div>
+    <div class="field"><label>Category</label>
+      <div class="cat-picker" id="g-cats">
+        ${data.categories.map(c=>`<div class="cat-chip ${isEdit && goal.categoryId===c.id?'selected':''}" data-cat="${c.id}" style="background:${c.color}" onclick="pickGoalCat('${c.id}')">${escapeHtml(c.name)}</div>`).join("")}
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn cancel" onclick="closeSheet()">Cancel</button>
+      ${isEdit ? `<button class="btn delete" onclick="deleteGoal('${goal.id}')">Delete</button>`:''}
+      <button class="btn save" onclick="saveGoal(${isEdit?`'${goal.id}'`:'null'})">Save</button>
+    </div>
+  `;
+  selectedGoalCat = isEdit ? goal.categoryId : (data.categories[0]?data.categories[0].id:null);
+  openSheet();
+}
+let selectedGoalCat = null;
+function pickGoalCat(id){
+  selectedGoalCat = id;
+  document.querySelectorAll("#g-cats .cat-chip").forEach(el=>el.classList.toggle("selected", el.dataset.cat===id));
+}
+function saveGoal(id){
+  const name = document.getElementById("g-title").value.trim();
+  if(!name){ showToast("Give it a name first"); return; }
+  if(id){
+    const g = data.goals.find(x=>x.id===id);
+    g.name=name; g.categoryId=selectedGoalCat;
+  } else {
+    data.goals.push({id:uid(), name, categoryId:selectedGoalCat, streak:0, lastDone:null});
+  }
+  save(); closeSheet(); render();
+  showToast("Saved");
+}
+function deleteGoal(id){
+  data.goals = data.goals.filter(g=>g.id!==id);
+  save(); closeSheet(); render();
+  showToast("Deleted");
+}
+
+/* ---------- settings actions ---------- */
+function renameCategory(id, name){
+  const c = data.categories.find(x=>x.id===id);
+  c.name = name.trim() || c.name;
+  save();
+}
+function deleteCategory(id){
+  const used = Object.values(data.template).some(arr=>arr.some(b=>b.categoryId===id)) || data.goals.some(g=>g.categoryId===id);
+  if(used){ showToast("Still used by a block or goal"); return; }
+  if(data.categories.length<=1){ showToast("Keep at least one category"); return; }
+  data.categories = data.categories.filter(c=>c.id!==id);
+  save(); render();
+}
+function addCategory(){
+  const used = data.categories.map(c=>c.color);
+  const color = PALETTE.find(p=>!used.includes(p)) || PALETTE[data.categories.length % PALETTE.length];
+  data.categories.push({id:uid(), name:"New Category", color});
+  save(); render();
+}
+function openColorPicker(catId){
+  const sheet = document.getElementById("sheet");
+  sheet.innerHTML = `
+    <h2>Pick a color</h2>
+    <div class="swatch-picker">
+      ${PALETTE.map(p=>`<div class="swatch-opt" style="background:${p}" onclick="setCatColor('${catId}','${p}')"></div>`).join("")}
+    </div>
+    <div class="sheet-actions"><button class="btn cancel" onclick="closeSheet()">Close</button></div>
+  `;
+  openSheet();
+}
+function setCatColor(catId, color){
+  const c = data.categories.find(x=>x.id===catId);
+  c.color = color;
+  save(); closeSheet(); render();
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "syds-day-backup-"+todayStr()+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast("Backup downloaded");
+}
+function importData(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed.categories || !parsed.template) throw new Error("bad file");
+      data = parsed;
+      save(); render();
+      showToast("Backup restored");
+    }catch(err){
+      showToast("Couldn't read that file");
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = "";
+}
+function resetAll(){
+  if(!confirm("This clears your whole schedule, goals, and progress. Are you sure?")) return;
+  if(!confirm("Really sure? This can't be undone unless you have a backup.")) return;
+  data = defaultData();
+  save(); render();
+  showToast("Reset complete");
+}
+
+/* ---------- sheet controls ---------- */
+function openSheet(){ document.getElementById("overlay").classList.add("open"); }
+function closeSheet(){ document.getElementById("overlay").classList.remove("open"); }
+document.getElementById("overlay").addEventListener("click", e=>{ if(e.target.id==="overlay") closeSheet(); });
+
+/* ---------- init ---------- */
+render();
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=> navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
